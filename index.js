@@ -26,19 +26,41 @@ app.get('/',(req,res)=> {
 })
 
 app.post('/', (req,res)=>{
-  const {email,password} = req.body;
-    fs.writeFile("hello.txt", email, (err)=>{
-        if(err) throw err;
-        console.log('Data written to file');
-    } )
+   //logic 
+   const {email, name,password,id} = req.body
+   fs.writeFile('hello.txt', JSON.stringify(req.body) , (err)=>{
+     if(err) {
+      return res.status(500).json({
+      message:err.message 
+     })
+    }
+    return res.status(201).json({
+      message: "data saved successfully",
+    })
+   } )
+})
+
+app.put('/:query', (req,res)=>{
+  //id query
+  const {query} = req.params;
+  console.log(query)
+  const {email, name,password,id} = req.body
   
-   //logic
-   res.status(201).json({
-    message: "Data received successfully",
-    data : {email, password}
-   })
-  
-}) 
+  // TODO:  handle  ..  where id doesnot exist  
+  // read file using fs.readfile
+  // update data using fs.writefile 
+
+
+})
+
+
+
+
+//1) form , value , email,name,password 
+//2) validation empy
+//3)  logic validation
+//4// logic to save data to database /storage 
+
 
 
 
