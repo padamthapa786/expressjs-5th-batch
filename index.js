@@ -1,69 +1,101 @@
-const express = require('express');
-const fs = require('fs');
+const fs = require("fs");
+const express = require("express");
 const app = express();
+const db = require("./db")
+
+app.use(express.json());
+const con = db.connect
 
 
-app.use(express.json())
+app.post("/", (req, res) => {
+  const newData = req.body;
 
+  fs.readFile("data.json", "utf-8", (err, fileData) => {
+    let dataArray = [];
 
-//http method , get ,post ,put,path,delete
-
-const data = {
-  name: "padam",
-  age: 25,
-  city: "chennai"
- 
-}
-
-const {name , age, city}= data
-
-
-app.get('/',(req,res)=> {
-
-  res.json({
-    data:"hello world get"
-  })
-})
-
-app.post('/', (req,res)=>{
-   //logic 
-   const {email, name,password,id} = req.body
-   fs.writeFile('hello.txt', JSON.stringify(req.body) , (err)=>{
-     if(err) {
-      return res.status(500).json({
-      message:err.message 
-     })
+    if (err) {
+      console.error("Error reading file:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    } else if (fileData.trim()) {
+      dataArray = JSON.parse(fileData);
     }
+    dataArray.push(newData);
+
+    fs.writeFile(
+      "data.json",
+      JSON.stringify(dataArray, null, 2),
+      (writeErr) => {
+        if (writeErr) {
+          console.error("Error writing file:", writeErr);
+          return res.status(500).json({ error: "Failed to save data" });
+        }
+        res.json({ message: "Data saved successfully", data: newData });
+      }
+    );
+  });
+});
+
+app.put("/:id", (req, res) => {
+  const id = req.params.id;
+  const updatedData = req.body;
+  fs.readFile("data.json", "utf-8", (err, fileData) => {
+    let dataArray;
+    if (err) {
+      console.error("Error reading file:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    dataArray = JSON.parse(fileData);
+    const dataIndex = dataArray.findIndex((data) => data.id === id);
+    if (!dataIndex) {
+      return res.status(404).json({ error: "Data not found" });
+    }
+    dataArray[dataIndex] = { ...dataArray[dataIndex], ...updatedData };
+    console.log(dataArray[dataIndex]);
+    fs.writeFile("data.json", JSON.stringify(dataArray, null, 2), (err) => {
+      if (err) throw err;
+      return res.status(201).json({
+        message: " Data updated",
+      });
+    });
+  });
+});
+
+app.delete("/:id", (req, res) => {
+  const id = req.params.id;
+  fs.readFile("data.json", (err, data) => {
+    let dataArray;
+    if (err) throw err;
+    dataArray = JSON.parse(data);
+    const newData = dataArray.filter((data) => data.id !== parseInt(id));
+    console.log(newData);
+    fs.writeFile("data.json", JSON.stringify(newData), (err) => {
+      if (err) throw err;
+      return res.status(200).json({
+        message: "data deleted successfully",
+      });
+    });
+  });
+});
+
+app.post("/user", (req,res)=>{
+  const {name, email, password} = req.body
+  const createUserSql = "INSERT INTO users (name,email,password) VALUES(?,?,?)"
+  con.query(createUserSql, [name, email, password], (err,result)=>{
+    if(err) throw err;
     return res.status(201).json({
-      message: "data saved successfully",
+      message:"user created successfully",
+      data: result
     })
-   } )
-})
-
-app.put('/:query', (req,res)=>{
-  //id query
-  const {query} = req.params;
-  console.log(query)
-  const {email, name,password,id} = req.body
-  
-  // TODO:  handle  ..  where id doesnot exist  
-  // read file using fs.readfile
-  // update data using fs.writefile 
-
+  })
 
 })
 
 
 
 
-//1) form , value , email,name,password 
-//2) validation empy
-//3)  logic validation
-//4// logic to save data to database /storage 
 
 
-
-
-app.listen(3000, ()=> {
-  console.log('Server is running on port 3000');
-})
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
