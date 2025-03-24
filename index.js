@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+require('dotenv').config();
 
 const userRoute = require("./routes/userRoute");
 const postRoute = require("./routes/postRoute");
@@ -7,13 +8,9 @@ const postRoute = require("./routes/postRoute");
 
 app.use(express.json());
 
-//routing main route
 app.use('/user', userRoute)
+
 app.use('/post', postRoute)
-
-// localhost:3000/user/getallusers
-// localhost:3000/post/
-
 
 app.listen(3000, () => {
   console.log("listening on port 3000");
