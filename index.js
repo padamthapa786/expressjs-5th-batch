@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
+const cors = require("cors")
 require('dotenv').config();
+
 
 const userRoute = require("./routes/userRoute");
 const postRoute = require("./routes/postRoute");
@@ -8,6 +10,7 @@ const postRoute = require("./routes/postRoute");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
+app.use(cors())
 
 app.use('/user', userRoute)
 

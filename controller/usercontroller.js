@@ -6,7 +6,7 @@ const prisma = require("../config/prisma");
 // address  String?
 const signUp = async (req, res) => {
   try {
-    const { name, email, password, phone, address } = req.body;
+    const { username, email, password, phone, address } = req.body;
     const checkEmail = await prisma.user.findUnique({
       where: {
         email,
@@ -23,11 +23,9 @@ const signUp = async (req, res) => {
 
     const saveUser = await prisma.user.create({
       data: {
-        name: name,
+        username: username,
         email: email,
         password: hashPassword,
-        phone: phone,
-        address: address,
       },
     });
 
@@ -56,11 +54,56 @@ const signUp = async (req, res) => {
   }
 };
 
-const login = (req, res) => {
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  const checkEmail = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!checkEmail) {
+    return res.status(400).json({
+      message: "Email Not Exist",
+    });
+  }
 
+  const checkPassword = await bcrypt.compare(password, checkEmail.password);
+
+  if (!checkPassword) {
+    return res.status(404).json({
+      message: "Password does not match",
+    });
+  }
+
+   //token to be generated here
+
+   const accesToken = jwt.sign(
+    {
+      id: checkEmail.id,
+      email: checkEmail.email,
+    },
+    process.env.JWT_SECRET_KEY,
+    {
+      expiresIn: "1d",
+    }
+  );
+
+  return res.status(201).json({
+    message: "User Loggedin",
+    user: checkEmail,
+    accessToken: accesToken,
+  });
+
+
+};
+
+
+const userFetch  = async (req,res)=>{
+  const user = user
 }
 
 module.exports = {
-    signUp,
-    login,
+  signUp,
+
+  login,
 };
