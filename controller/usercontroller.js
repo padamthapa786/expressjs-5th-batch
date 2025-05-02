@@ -60,6 +60,7 @@ const login = async (req, res) => {
     where: {
       email,
     },
+
   });
   if (!checkEmail) {
     return res.status(400).json({
@@ -99,11 +100,17 @@ const login = async (req, res) => {
 
 
 const userFetch  = async (req,res)=>{
-  const user = user
+    const user = req.user
+    const getuser = await prisma.user.findFirst({
+      where:{
+        id:user.id
+      }
+    }) 
+    console.log(getuser)
 }
 
 module.exports = {
   signUp,
-
+  userFetch,
   login,
 };
