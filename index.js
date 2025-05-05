@@ -8,6 +8,7 @@ const userRoute = require("./routes/userRoute");
 const postRoute = require("./routes/postRoute");
 
 
+//global midlleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
@@ -19,3 +20,8 @@ app.use('/post', postRoute)
 app.listen(3000, () => {
   console.log("listening on port 3000");
 });
+
+
+//prefix 
+
+//ssuffic

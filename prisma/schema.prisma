@@ -11,11 +11,29 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  username     String
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  username String
   password String
+
+  post Post[]
 
   //posts    
 }
 
+model Post {
+  id      Int    @id @default(autoincrement())
+  title   String
+  content String
+  image   String
+
+  userId  Int //automic as in header
+
+
+  author User @relation(fields: [userId], references: [id])
+}
+
+//relation ship
+
+//user has many post 
+//post belong to one user 

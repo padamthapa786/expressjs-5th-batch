@@ -56,11 +56,11 @@ const signUp = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
+  console.log(email)
   const checkEmail = await prisma.user.findUnique({
     where: {
       email,
     },
-
   });
   if (!checkEmail) {
     return res.status(400).json({
@@ -76,9 +76,9 @@ const login = async (req, res) => {
     });
   }
 
-   //token to be generated here
+  //token to be generated here
 
-   const accesToken = jwt.sign(
+  const accesToken = jwt.sign(
     {
       id: checkEmail.id,
       email: checkEmail.email,
@@ -94,20 +94,21 @@ const login = async (req, res) => {
     user: checkEmail,
     accessToken: accesToken,
   });
-
-
 };
 
-
-const userFetch  = async (req,res)=>{
-    const user = req.user
-    const getuser = await prisma.user.findFirst({
-      where:{
-        id:user.id
-      }
-    }) 
-    console.log(getuser)
-}
+const userFetch = async (req, res) => {
+  const user = req.user;
+  const getuser = await prisma.user.findFirst({
+    where: {
+      id: user.id,
+    },
+  });
+  console.log(getuser);
+  return res.status(200).json({
+    data: user,
+    message: "user fetched",
+  });
+};
 
 module.exports = {
   signUp,

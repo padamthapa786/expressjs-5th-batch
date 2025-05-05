@@ -7,7 +7,7 @@ const checkAuth = require('../middleware/checkauth')
 const router = express.Router()
 
 router.post('/signup', signUp)
-router.post('/login', checkAuth, login)
+router.post('/login', login)
 router.get("/user",checkAuth,  userFetch)
 
 
