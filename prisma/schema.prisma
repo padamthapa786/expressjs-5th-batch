@@ -25,7 +25,7 @@ model Post {
   id      Int    @id @default(autoincrement())
   title   String
   content String
-  image   String
+  image   String[]
 
   userId  Int //automic as in header
 

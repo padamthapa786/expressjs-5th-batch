@@ -1,11 +1,14 @@
 
 const express = require('express')
-const {postcreate} = require('../controller/postcontroller')
+const {postcreate, postGet} = require('../controller/postcontroller')
 const upload = require("../middleware/upload")
+const checkAuth = require('../middleware/checkauth')
 const router = express.Router()
 
 // http method with router 
-router.post('/', upload.single("image"), postcreate )
+router.post('/',checkAuth, upload.array("images",10), postcreate )
+router.get("/", postGet  )
+
 
 module.exports = router
 

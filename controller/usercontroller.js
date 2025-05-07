@@ -38,7 +38,7 @@ const signUp = async (req, res) => {
       },
       process.env.JWT_SECRET_KEY,
       {
-        expiresIn: "1d",
+        expiresIn: "5d",
       }
     );
     return res.status(201).json({
@@ -85,7 +85,7 @@ const login = async (req, res) => {
     },
     process.env.JWT_SECRET_KEY,
     {
-      expiresIn: "1d",
+      expiresIn: "5d",
     }
   );
 
